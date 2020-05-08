@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {useNavigation} from "@react-navigation/native";
 import {
   Image,
-  ImageStyle,
+  ImageStyle, Platform,
   StyleSheet,
   Text,
   TextStyle,
@@ -86,13 +86,14 @@ const VideoItem = (props: VideoItemProps) => {
     <TouchableWithoutFeedback onPress={() => setPaused(!paused)}>
       <View style={styles.videoWrap}>
 
-        {/*视频播放组件*/}
+        {/*视频播放组件 onProgress回调因在Android上的NaN兼容问题而屏蔽掉*/}
         <Video ref={videoRef}
                source={require('./assets/a.mp4')}
                style={styles.video}
                paused={paused || !props.canPlay}
                repeat={true}
-               onProgress={_onProgress}
+               onProgress={Platform.OS === 'ios' ? _onProgress : undefined}
+               resizeMode={Platform.OS === 'ios' ? 'none' : 'cover'}
         />
 
         {/*播放按钮*/}
@@ -180,7 +181,7 @@ const styles = StyleSheet.create<Style>({
     justifyContent: 'center',
     alignItems: 'center',
     width: screenWidth,
-    height: screenHeight,
+    height: screenHeight - (Platform.OS === 'ios' ? 0 : 24),
     backgroundColor: '#1A1B20',
   },
   video: {
@@ -237,7 +238,6 @@ const styles = StyleSheet.create<Style>({
     paddingRight: 10,
     alignItems: 'flex-end',
   },
-
   progress: {
     position: 'absolute',
     left: 0,

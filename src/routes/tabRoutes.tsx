@@ -163,7 +163,7 @@ interface Style {
 const styles = StyleSheet.create<Style>({
   tabWrapSpecial: {
     borderTopColor: '#201718',
-    borderTopWidth: line,
+    borderTopWidth: line * 3,
     backgroundColor: 'transparent',
   },
   tabWrap: {
