@@ -12,7 +12,7 @@ interface CommItemProps {
   onPressPraise: () => void,
 }
 
-const CommItem = (props: CommItemProps) => {
+const CommentItem = (props: CommItemProps) => {
   const {item, type = CommentaryLevelEnum.MAIN, onPressPraise} = props;
   const isSecondary = type === CommentaryLevelEnum.SECONDARY;
 
@@ -52,7 +52,7 @@ const CommItem = (props: CommItemProps) => {
   )
 };
 
-export default CommItem;
+export default CommentItem;
 
 interface Style {
   itemWrap: ViewStyle;

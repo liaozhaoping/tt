@@ -17,7 +17,7 @@ import {
 } from "react-native";
 import {StackNavigationProp} from "@react-navigation/stack/lib/typescript/src/types";
 import {CommentaryDTO, CommentaryLevelEnum, mockCommList} from "./services";
-import CommItem from "./CommItem";
+import CommentItem from "./CommentItem";
 import {isIphoneX} from "../../utils/publicStyle";
 
 
@@ -25,6 +25,8 @@ const Commentary = ({route, navigation}: { route: any, navigation: StackNavigati
   navigation.setOptions({headerShown: false});
 
   const [list, setList] = React.useState(mockCommList);
+  const [comment, setComment] = React.useState('');
+
   React.useEffect(() => {
     //setList([]);
   }, [route.params.videoId]);
@@ -45,9 +47,9 @@ const Commentary = ({route, navigation}: { route: any, navigation: StackNavigati
   const _renderItem = ({item, index}: { item: CommentaryDTO, index: number }) => {
     return (
       <View>
-        <CommItem key={index} item={item} onPressPraise={() => handlePraise(item, index)}/>
+        <CommentItem key={index} item={item} onPressPraise={() => handlePraise(item, index)}/>
         {item.replyList && item.replyList.length && item.replyList.map((v, i) => (
-          <CommItem key={i} item={v} type={CommentaryLevelEnum.SECONDARY} onPressPraise={() => handlePraise(v, i)}/>
+          <CommentItem key={i} item={v} type={CommentaryLevelEnum.SECONDARY} onPressPraise={() => handlePraise(v, i)}/>
         ))}
       </View>
     )
@@ -76,10 +78,13 @@ const Commentary = ({route, navigation}: { route: any, navigation: StackNavigati
 
         {/*尾部输入框*/}
         <View style={styles.inputWrap}>
-          <TextInput style={styles.input}
-                     placeholder="有爱评论，说点儿好听的~"
-                     placeholderTextColor='#A1A2A7'
-          />
+          <TouchableWithoutFeedback onPress={() => navigation.navigate('Modals', {screen: 'CommentInput'})}>
+            <View style={styles.commentWrap}>
+              <Text style={[styles.comment, !comment && {color: '#A1A2A7'}]}>
+                {comment || '有爱评论，说点儿好听的~'}
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
           <TouchableOpacity style={styles.sendWrap} onPress={() => {
           }}>
             <Image source={require('./assets/send.png')} style={styles.sendIcon}/>
@@ -102,10 +107,9 @@ interface Style {
   inputWrap: ViewStyle;
   listWrap: ViewStyle;
   sendIcon: ImageStyle;
-  input: ViewStyle;
+  comment: TextStyle;
   sendWrap: ViewStyle;
-
-
+  commentWrap: ViewStyle;
 }
 
 const styles = StyleSheet.create<Style>({
@@ -155,18 +159,21 @@ const styles = StyleSheet.create<Style>({
     width: 25,
     height: 25,
   },
-  input: {
-    flex: 1,
-    height: '100%',
-    paddingVertical: 0,
-    paddingHorizontal: 25,
-    fontSize: 16,
-    color: 'white',
-  },
   sendWrap: {
     height: '100%',
     width: 80,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  commentWrap: {
+    flex: 1,
+    height: '100%',
+    paddingVertical: 0,
+    paddingHorizontal: 25,
+    justifyContent: 'center',
+  },
+  comment: {
+    fontSize: 16,
+    color: 'white',
+  }
 });

@@ -4,7 +4,7 @@ import {publicStyle} from "../../utils/publicStyle";
 import {StackNavigationProp} from "@react-navigation/stack/lib/typescript/src/types";
 
 
-const ShootModal = ({navigation}: {navigation: StackNavigationProp<any>}) => {
+const ShootVideo = ({navigation}: {navigation: StackNavigationProp<any>}) => {
   navigation.setOptions({
     headerShown: false,
   });
@@ -39,4 +39,4 @@ const styles = StyleSheet.create<Style>({
   }
 });
 
-export default ShootModal;
+export default ShootVideo;
