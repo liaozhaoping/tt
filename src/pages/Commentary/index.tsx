@@ -17,54 +17,8 @@ import {
 } from "react-native";
 import {StackNavigationProp} from "@react-navigation/stack/lib/typescript/src/types";
 import {CommentaryDTO, CommentaryLevelEnum, mockCommList} from "./services";
-import {screenWidth} from "../../utils/publicStyle";
+import CommItem from "./CommItem";
 
-interface CommItemProps {
-  item: CommentaryDTO,
-  type?: CommentaryLevelEnum,
-  onPressPraise: () => void,
-}
-
-//单个评论Item
-const CommItem = (props: CommItemProps) => {
-  const {item, type = CommentaryLevelEnum.MAIN, onPressPraise} = props;
-  const isSecondary = type === CommentaryLevelEnum.SECONDARY;
-
-  //点击一个评论进行回复
-  function _onPressContent() {
-
-  }
-
-  //点击点赞
-  function _onPressPraise() {
-    onPressPraise();
-  }
-
-  return (
-    <TouchableOpacity onPress={_onPressContent}>
-      <View style={[styles.itemWrap, isSecondary && styles.secondaryWrap]}>
-        <View style={[styles.avatarWrap, isSecondary && styles.secondaryAvatarWrap]}>
-          <Image source={require('./assets/avatar.png')}
-                 style={[styles.avatarImg, isSecondary && styles.secondaryAvatarImg]}/>
-        </View>
-        <View style={styles.commWrap}>
-          <Text style={styles.nameText}>{item.name}</Text>
-          <Text style={styles.commText}>
-            {item.content}
-            <Text style={styles.dateText}>{` ${item.date}`}</Text>
-          </Text>
-        </View>
-        <View style={styles.approvalWrap}>
-          <TouchableOpacity onPress={_onPressPraise} style={styles.heartWrap}>
-            <Image source={item.isLike ? require('./assets/redHeart.png') : require('./assets/heart.png')}
-                   style={styles.heartImg} resizeMode="contain"/>
-            <Text style={[styles.heartText, item.isLike && {color: '#d81e06'}]}>{item.hearts}</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </TouchableOpacity>
-  )
-};
 
 const Commentary = ({route, navigation}: { route: any, navigation: StackNavigationProp<any> }) => {
   navigation.setOptions({headerShown: false});
@@ -74,20 +28,25 @@ const Commentary = ({route, navigation}: { route: any, navigation: StackNavigati
     //setList([]);
   }, [route.params.videoId]);
 
-  const goBack = () => {
+  //处理返回事件
+  function handleGoBack() {
     navigation.goBack();
-  };
+  }
 
+  //处理点赞或取消点赞
+  function handlePraise(item: CommentaryDTO, index: number) {
+    item.isLike = !item.isLike;
+    item.hearts += item.isLike ? 1 : -1;
+    setList(prevState => prevState.splice(index, 1, item));
+  }
+
+  //渲染单个评论
   const _renderItem = ({item, index}: { item: CommentaryDTO, index: number }) => {
     return (
       <View>
-        <CommItem key={index} item={item} onPressPraise={() => {
-          item.isLike = !item.isLike;
-          item.hearts += item.isLike ? 1 : -1;
-          setList(prevState => prevState.splice(index, 1, item));
-        }}/>
+        <CommItem key={index} item={item} onPressPraise={() => handlePraise(item, index)}/>
         {item.replyList && item.replyList.length && item.replyList.map((v, i) => (
-          <CommItem key={i} item={v} type={CommentaryLevelEnum.SECONDARY} onPressPraise={() => {}}/>
+          <CommItem key={i} item={v} type={CommentaryLevelEnum.SECONDARY} onPressPraise={() => handlePraise(v, i)}/>
         ))}
       </View>
     )
@@ -95,14 +54,14 @@ const Commentary = ({route, navigation}: { route: any, navigation: StackNavigati
 
   return (
     <View style={styles.container}>
-      <TouchableWithoutFeedback onPress={goBack}>
+      <TouchableWithoutFeedback onPress={handleGoBack}>
         <View style={{flex: 0.3}}/>
       </TouchableWithoutFeedback>
       <View style={styles.content}>
         {/*头部标题*/}
         <View style={styles.headerWrap}>
           <Text style={styles.headerText}>{`${list.length}条评论`}</Text>
-          <TouchableOpacity style={styles.closeWrap} onPress={goBack}>
+          <TouchableOpacity style={styles.closeWrap} onPress={handleGoBack}>
             <Image source={require('./assets/close.png')} style={styles.closeIcon}/>
           </TouchableOpacity>
         </View>
@@ -144,20 +103,8 @@ interface Style {
   sendIcon: ImageStyle;
   input: ViewStyle;
   sendWrap: ViewStyle;
-  itemWrap: ViewStyle;
-  avatarWrap: ViewStyle;
-  avatarImg: ImageStyle;
-  commWrap: ViewStyle;
-  nameText: TextStyle;
-  commText: TextStyle;
-  dateText: TextStyle;
-  approvalWrap: ViewStyle;
-  heartImg: ImageStyle;
-  heartText: TextStyle;
-  heartWrap: ViewStyle;
-  secondaryWrap: ViewStyle;
-  secondaryAvatarImg: ImageStyle;
-  secondaryAvatarWrap: ViewStyle;
+
+
 }
 
 const styles = StyleSheet.create<Style>({
@@ -220,62 +167,4 @@ const styles = StyleSheet.create<Style>({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  itemWrap: {
-    flexDirection: 'row',
-    marginBottom: 20,
-  },
-  avatarWrap: {
-    width: 40,
-  },
-  avatarImg: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-  },
-  commWrap: {
-    flex: 1,
-  },
-  nameText: {
-    marginTop: 2,
-    fontSize: 13,
-    color: '#A1A2A7',
-  },
-  commText: {
-    lineHeight: 24,
-    fontSize: 16,
-    color: '#ccc',
-  },
-  dateText: {
-    fontSize: 13,
-    color: '#A1A2A7',
-  },
-  approvalWrap: {
-    marginLeft: 16,
-    paddingTop: 10,
-    alignItems: 'center',
-    width: 50,
-  },
-  heartImg: {
-    width: 22,
-    height: 22,
-  },
-  heartText: {
-    marginTop: 6,
-    fontSize: 14,
-    color: '#A1A2A7',
-  },
-  heartWrap: {
-    alignItems: 'center',
-  },
-  secondaryWrap: {
-    width: screenWidth - 70,
-    alignSelf: 'flex-end',
-  },
-  secondaryAvatarImg: {
-    width: 20,
-    height: 20,
-  },
-  secondaryAvatarWrap: {
-    width: 26,
-  }
 });
