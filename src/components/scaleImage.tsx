@@ -3,7 +3,7 @@
 * */
 
 import React from "react";
-import {Animated, TouchableOpacity} from "react-native";
+import {Animated, Easing, TouchableOpacity} from "react-native";
 
 interface ScaleImageProps {
   source: any,
@@ -23,6 +23,7 @@ export const ScaleImage = (props: ScaleImageProps) => {
   const {source, wrapStyle, imgStyle, onPress, mode = ScaleImageModeEnum.PRESS} = props;
 
   const [scaleValue] = React.useState(new Animated.Value(0));
+  const [opacityValue] = React.useState(new Animated.Value(mode !== ScaleImageModeEnum.PRESS ? 0: 1));
 
   React.useEffect(() => {
     if (mode === ScaleImageModeEnum.CREATE || mode === ScaleImageModeEnum.ALL) {
@@ -31,11 +32,21 @@ export const ScaleImage = (props: ScaleImageProps) => {
   }, []);
 
   function doScaleImage() {
-    Animated.spring(scaleValue, {
-      toValue: 1,
-      friction: 3,
-      useNativeDriver: true,
-    }).start(() => scaleValue.setValue(0));
+    Animated.parallel([
+      Animated.spring(scaleValue, {
+        toValue: 1,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacityValue, {
+        toValue: 1,
+        duration: 600,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      scaleValue.setValue(0);
+    });
   }
 
   const handlePress = () => {
@@ -54,7 +65,8 @@ export const ScaleImage = (props: ScaleImageProps) => {
                               inputRange: [0, 0.5, 1],
                               outputRange: [1, 0.8, 1]
                             })}
-                        ]
+                        ],
+                        opacity: opacityValue,
                       }]}
                       resizeMode={"contain"}
       />

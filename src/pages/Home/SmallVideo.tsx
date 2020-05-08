@@ -47,7 +47,7 @@ const VideoItem = (props: VideoItemProps) => {
       //播放当前页面时，设置为从头开始播放
       videoRef.current.seek(0);
     }
-    setPaused(props.current !== props.index || !props.canPlay);
+    setPaused(props.current !== props.index);
   }, [props.current, props.canPlay]);
 
   //渲染右侧部分功能图标
@@ -98,7 +98,7 @@ const VideoItem = (props: VideoItemProps) => {
         <Video ref={videoRef}
                source={require('./assets/a.mp4')}
                style={styles.video}
-               paused={paused}
+               paused={paused || !props.canPlay}
                repeat={true}
                onProgress={_onProgress}
         />
@@ -107,7 +107,7 @@ const VideoItem = (props: VideoItemProps) => {
         {
           paused && props.index === props.current &&
           <ScaleImage source={require('./assets/play.png')}
-                      wrapStyle={[styles.playBtn, {opacity: paused && props.index === props.current ? 1: 0}]}
+                      wrapStyle={[styles.playBtn]}
                       mode={ScaleImageModeEnum.ALL}
           />
         }
