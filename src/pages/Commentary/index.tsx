@@ -3,6 +3,7 @@
  * */
 import React from "react";
 import {
+  DatePickerIOS,
   FlatList,
   Image,
   ImageStyle,
@@ -23,11 +24,18 @@ import {isIphoneX} from "../../utils/publicStyle";
 const Commentary = ({route, navigation}: { route: any, navigation: StackNavigationProp<any> }) => {
   navigation.setOptions({headerShown: false});
 
+  //评论列表数据项
   const [list, setList] = React.useState(mockCommList);
+  //评论文案
+  const [comment, setComment] = React.useState('');
+  //艾特回复的对象
+  const [aiTe, setAiTe] = React.useState('');
+  //暂存当前被操作的一级评论对象
+  const [currentIndex, setCurrentIndex] = React.useState(0);
 
   React.useEffect(() => {
-    //setList([]);
-  }, [route.params.videoId]);
+    setComment(route.params.comment);
+  }, [route.params.comment]);
 
   //处理返回事件
   function handleGoBack() {
@@ -35,19 +43,70 @@ const Commentary = ({route, navigation}: { route: any, navigation: StackNavigati
   }
 
   //处理点赞或取消点赞
-  function handlePraise(item: CommentaryDTO, index: number) {
+  function handlePressPraise(item: CommentaryDTO, index: number) {
     item.isLike = !item.isLike;
     item.hearts += item.isLike ? 1 : -1;
     setList(prevState => prevState.splice(index, 1, item));
+  }
+
+  function handlePressComment(name: string, index: number) {
+    setAiTe(name);
+    navigation.navigate('Modals', {screen: 'CommentInput', params: {placeholder: `回复@${name}`}})
+    setCurrentIndex(index);
+  }
+
+  //处理提交评论
+  function handleComment() {
+    if (route.params.comment) {
+      if (aiTe) {  //回复某个人，对对应评论的二级消息进行新增
+        setList(prevState => {
+          const temp = list[currentIndex];
+          temp.replyList = temp.replyList || [];
+          temp.replyList.push({
+            id: 1,
+            avatar: '',
+            name: '我新增回复',
+            content: `回复@${aiTe}：${comment}，时间戳为${(new Date()).valueOf()}`,
+            date: '5-12',
+            hearts: 0,
+            isLike: false,
+            aiTeName: aiTe,
+          });
+
+          prevState.splice(currentIndex, 1, temp);
+          return prevState.slice();
+        })
+      } else {  //编写新的评论，对一级消息进行新增
+        setList(prevState => {
+          return [...prevState, {
+            id: 1,
+            avatar: '',
+            name: '我新增评论',
+            content: `${comment}，时间戳为${(new Date()).valueOf()}`,
+            date: '5-12',
+            hearts: 0,
+            isLike: false,
+          }]
+        });
+      }
+    }
+
+    setAiTe('');
+    setComment('');
   }
 
   //渲染单个评论
   const _renderItem = ({item, index}: { item: CommentaryDTO, index: number }) => {
     return (
       <View>
-        <CommentItem key={index} item={item} onPressPraise={() => handlePraise(item, index)}/>
+        <CommentItem key={index} item={item}
+                     onPressPraise={() => handlePressPraise(item, index)}
+                     onPressComment={() => handlePressComment(item.name, index)}/>
         {item.replyList && item.replyList.length && item.replyList.map((v, i) => (
-          <CommentItem key={i} item={v} type={CommentaryLevelEnum.SECONDARY} onPressPraise={() => handlePraise(v, i)}/>
+          <CommentItem key={i} item={v}
+                       type={CommentaryLevelEnum.SECONDARY}
+                       onPressPraise={() => handlePressPraise(v, i)}
+                       onPressComment={() => handlePressComment(v.name, index)}/>
         ))}
       </View>
     )
@@ -76,15 +135,17 @@ const Commentary = ({route, navigation}: { route: any, navigation: StackNavigati
 
         {/*尾部输入框*/}
         <View style={styles.inputWrap}>
-          <TouchableWithoutFeedback onPress={() => navigation.navigate('Modals', {screen: 'CommentInput', params: {comment: route.params.comment}})}>
+          <TouchableWithoutFeedback onPress={() => navigation.navigate('Modals', {
+            screen: 'CommentInput',
+            params: {comment: comment}
+          })}>
             <View style={styles.commentWrap}>
-              <Text style={[styles.comment, !route.params.comment && {color: '#A1A2A7'}]}>
-                {route.params.comment || '有爱评论，说点儿好听的~'}
+              <Text style={[styles.comment, !comment && {color: '#A1A2A7'}]}>
+                {comment || '有爱评论，说点儿好听的~'}
               </Text>
             </View>
           </TouchableWithoutFeedback>
-          <TouchableOpacity style={styles.sendWrap} onPress={() => {
-          }}>
+          <TouchableOpacity style={styles.sendWrap} onPress={handleComment}>
             <Image source={require('./assets/send.png')} style={styles.sendIcon}/>
           </TouchableOpacity>
         </View>
@@ -144,7 +205,7 @@ const styles = StyleSheet.create<Style>({
   inputWrap: {
     flexDirection: 'row',
     height: isIphoneX ? 80 : 60,
-    paddingBottom: isIphoneX ? 20: 0,
+    paddingBottom: isIphoneX ? 20 : 0,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#1A1B20',

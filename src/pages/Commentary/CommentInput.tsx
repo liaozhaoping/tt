@@ -17,9 +17,11 @@ const CommentInput = ({route, navigation}: {route: any, navigation: StackNavigat
   navigation.setOptions({headerShown: false});
 
   const [comment, setComment] = React.useState('');
+  const [placeholder, setPlaceholder] = React.useState('有爱评论，说点儿好听的~');
 
   React.useEffect(() => {
     setComment(route.params.comment || '');
+    setPlaceholder(route.params.placeholder || '有爱评论，说点儿好听的~');
   }, []);
 
   function handleGoBack() {
@@ -41,7 +43,7 @@ const CommentInput = ({route, navigation}: {route: any, navigation: StackNavigat
                      onChangeText={val => setComment(val)}
                      underlineColorAndroid="transparent"
                      placeholderTextColor="#A1A2A7"
-                     placeholder="有爱评论，说点儿好听的~"
+                     placeholder={placeholder}
                      style={styles.input}
                      returnKeyType="done"
                      onSubmitEditing={handleGoBack}

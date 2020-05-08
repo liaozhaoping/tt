@@ -10,15 +10,16 @@ interface CommItemProps {
   item: CommentaryDTO,
   type?: CommentaryLevelEnum,
   onPressPraise: () => void,
+  onPressComment: () => void,
 }
 
 const CommentItem = (props: CommItemProps) => {
-  const {item, type = CommentaryLevelEnum.MAIN, onPressPraise} = props;
+  const {item, type = CommentaryLevelEnum.MAIN, onPressPraise, onPressComment} = props;
   const isSecondary = type === CommentaryLevelEnum.SECONDARY;
 
   //点击一个评论进行回复
   function _onPressContent() {
-
+    onPressComment();
   }
 
   //点击点赞
