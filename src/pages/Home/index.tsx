@@ -9,6 +9,7 @@ import Animated from 'react-native-reanimated';
 import SmallVideo from "./SmallVideo";
 import {VideoCategoryEnum} from "./services";
 import {useFocusEffect} from '@react-navigation/native';
+import {isIphoneX} from "../../utils/publicStyle";
 
 //推荐页面
 const Recommended = ({navigation}: { navigation: StackNavigationProp<any> }) => {
@@ -139,7 +140,8 @@ const styles = StyleSheet.create<Style>({
     right: 0,
     width: '100%',
     paddingHorizontal: 15,
-    height: 60,
+    height: isIphoneX ? 80 : 60,
+    paddingTop: isIphoneX ? 20 : 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',

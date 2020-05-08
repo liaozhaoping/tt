@@ -18,7 +18,7 @@ import {
   StyleSheet, ViewStyle, TextStyle, ImageStyle,
 } from 'react-native';
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs/lib/typescript/src/types';
-import {line} from "../utils/publicStyle";
+import {isIphoneX, line} from "../utils/publicStyle";
 
 const Tab = createBottomTabNavigator();
 
@@ -170,9 +170,10 @@ const styles = StyleSheet.create<Style>({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: 0,
+    bottom:  0,
     flexDirection: 'row',
-    height: 60,
+    height: isIphoneX ? 80 : 60,
+    paddingBottom: isIphoneX ? 20 : 0,
     backgroundColor: '#1A1B20',
   },
   tabBarWrap: {

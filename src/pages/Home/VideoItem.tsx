@@ -13,7 +13,7 @@ import {
 import {ScaleImage, ScaleImageModeEnum} from "../../components/scaleImage";
 import Video from "react-native-video";
 import {RotateImage} from "../../components/rotateImage";
-import {line, screenHeight, screenWidth} from "../../utils/publicStyle";
+import {isIphoneX, line, screenHeight, screenWidth} from "../../utils/publicStyle";
 
 
 interface VideoItemProps {
@@ -196,7 +196,7 @@ const styles = StyleSheet.create<Style>({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: 60,
+    bottom: isIphoneX ? 80 : 60,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
@@ -242,7 +242,7 @@ const styles = StyleSheet.create<Style>({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: 60,
+    bottom: isIphoneX ? 80 : 60,
     height: line * 2,
     backgroundColor: '#aaa',
     flexDirection: 'row',

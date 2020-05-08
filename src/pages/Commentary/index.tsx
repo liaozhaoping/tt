@@ -18,6 +18,7 @@ import {
 import {StackNavigationProp} from "@react-navigation/stack/lib/typescript/src/types";
 import {CommentaryDTO, CommentaryLevelEnum, mockCommList} from "./services";
 import CommItem from "./CommItem";
+import {isIphoneX} from "../../utils/publicStyle";
 
 
 const Commentary = ({route, navigation}: { route: any, navigation: StackNavigationProp<any> }) => {
@@ -140,7 +141,8 @@ const styles = StyleSheet.create<Style>({
   },
   inputWrap: {
     flexDirection: 'row',
-    height: 60,
+    height: isIphoneX ? 80 : 60,
+    paddingBottom: isIphoneX ? 20: 0,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#1A1B20',

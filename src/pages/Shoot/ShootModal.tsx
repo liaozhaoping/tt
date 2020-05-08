@@ -9,7 +9,7 @@ const ShootModal = ({navigation}: {navigation: StackNavigationProp<any>}) => {
     headerShown: false,
   });
   return (
-    <View style={publicStyle.container}>
+    <View style={[publicStyle.container, styles.container]}>
       <TouchableOpacity style={styles.closeWrap} onPress={() => navigation.goBack()}>
         <Image source={require('./assets/close.png')} style={styles.closeIcon}/>
       </TouchableOpacity>
@@ -19,11 +19,15 @@ const ShootModal = ({navigation}: {navigation: StackNavigationProp<any>}) => {
 };
 
 interface Style {
+  container: ViewStyle;
   closeWrap: ViewStyle,
   closeIcon: ImageStyle,
 }
 
 const styles = StyleSheet.create<Style>({
+  container: {
+    backgroundColor: 'white',
+  },
   closeWrap: {
     position: 'absolute',
     top: 40,
