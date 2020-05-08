@@ -22,15 +22,26 @@ import {screenWidth} from "../../utils/publicStyle";
 interface CommItemProps {
   item: CommentaryDTO,
   type?: CommentaryLevelEnum,
+  onPressPraise: () => void,
 }
 
 //单个评论Item
 const CommItem = (props: CommItemProps) => {
-  const {item, type = CommentaryLevelEnum.MAIN} = props;
+  const {item, type = CommentaryLevelEnum.MAIN, onPressPraise} = props;
   const isSecondary = type === CommentaryLevelEnum.SECONDARY;
 
+  //点击一个评论进行回复
+  function _onPressContent() {
+
+  }
+
+  //点击点赞
+  function _onPressPraise() {
+    onPressPraise();
+  }
+
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={_onPressContent}>
       <View style={[styles.itemWrap, isSecondary && styles.secondaryWrap]}>
         <View style={[styles.avatarWrap, isSecondary && styles.secondaryAvatarWrap]}>
           <Image source={require('./assets/avatar.png')}
@@ -44,11 +55,10 @@ const CommItem = (props: CommItemProps) => {
           </Text>
         </View>
         <View style={styles.approvalWrap}>
-          <TouchableOpacity onPress={() => {
-          }} style={styles.heartWrap}>
+          <TouchableOpacity onPress={_onPressPraise} style={styles.heartWrap}>
             <Image source={item.isLike ? require('./assets/redHeart.png') : require('./assets/heart.png')}
                    style={styles.heartImg} resizeMode="contain"/>
-            <Text style={styles.heartText}>{item.hearts}</Text>
+            <Text style={[styles.heartText, item.isLike && {color: '#d81e06'}]}>{item.hearts}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -59,7 +69,7 @@ const CommItem = (props: CommItemProps) => {
 const Commentary = ({route, navigation}: { route: any, navigation: StackNavigationProp<any> }) => {
   navigation.setOptions({headerShown: false});
 
-  const [list] = React.useState(mockCommList);
+  const [list, setList] = React.useState(mockCommList);
   React.useEffect(() => {
     //setList([]);
   }, [route.params.videoId]);
@@ -71,9 +81,13 @@ const Commentary = ({route, navigation}: { route: any, navigation: StackNavigati
   const _renderItem = ({item, index}: { item: CommentaryDTO, index: number }) => {
     return (
       <View>
-        <CommItem key={index} item={item}/>
+        <CommItem key={index} item={item} onPressPraise={() => {
+          item.isLike = !item.isLike;
+          item.hearts += item.isLike ? 1 : -1;
+          setList(prevState => prevState.splice(index, 1, item));
+        }}/>
         {item.replyList && item.replyList.length && item.replyList.map((v, i) => (
-          <CommItem key={i} item={v} type={CommentaryLevelEnum.SECONDARY}/>
+          <CommItem key={i} item={v} type={CommentaryLevelEnum.SECONDARY} onPressPraise={() => {}}/>
         ))}
       </View>
     )
