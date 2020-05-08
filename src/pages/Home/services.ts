@@ -23,3 +23,7 @@ export interface VideoDTO {
   liveId: number,  //直播ID
 
 }
+
+export const Services = {
+  //todo 数据交互
+};

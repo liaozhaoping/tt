@@ -17,6 +17,7 @@ import {line, screenHeight, screenWidth} from "../../utils/publicStyle";
 import {VideoCategoryEnum} from "./services";
 import {RotateImage} from "../../components/rotateImage";
 import {ScaleImage, ScaleImageModeEnum} from "../../components/scaleImage";
+import {useNavigation} from '@react-navigation/native';
 
 interface SmallVideoProps {
   type: VideoCategoryEnum
@@ -34,6 +35,7 @@ interface VideoItemProps {
 const VideoItem = (props: VideoItemProps) => {
   const [paused, setPaused] = useState(false);
   const [flexCompleted, setFlexCompleted] = useState(0);
+  const navigation = useNavigation();
 
   //视频组件的ref引用
   const videoRef = React.useRef(null);
@@ -61,6 +63,7 @@ const VideoItem = (props: VideoItemProps) => {
         icon: require('./assets/msg.png'),
         label: '2.3w',
         onPress: () => {
+          navigation.navigate('Modals', {screen: 'Commentary', params: {videoId: 100}});
         },
       },
       {
@@ -74,7 +77,7 @@ const VideoItem = (props: VideoItemProps) => {
     return (
       icons.map((v, i) => (
         <TouchableOpacity onPress={v.onPress} key={i} style={styles.iconsContent}>
-          <ScaleImage source={v.icon} imgStyle={styles.icons}/>
+          <ScaleImage source={v.icon} imgStyle={styles.icons} onPress={v.onPress}/>
           <Text style={styles.labelText}>{v.label}</Text>
         </TouchableOpacity>
       ))
@@ -103,7 +106,10 @@ const VideoItem = (props: VideoItemProps) => {
         {/*播放按钮*/}
         {
           paused && props.index === props.current &&
-          <ScaleImage source={require('./assets/play.png')} wrapStyle={styles.playBtn} mode={ScaleImageModeEnum.ALL}/>
+          <ScaleImage source={require('./assets/play.png')}
+                      wrapStyle={[styles.playBtn, {opacity: paused && props.index === props.current ? 1: 0}]}
+                      mode={ScaleImageModeEnum.ALL}
+          />
         }
 
         <View style={styles.content}>

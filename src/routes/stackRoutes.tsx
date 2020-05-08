@@ -28,7 +28,7 @@ const stackRoutes = [
 //主堆栈导航器
 const StackRoutes = () => {
   return (
-    <Stack.Navigator mode="modal" headerMode="none">
+    <Stack.Navigator mode="modal" headerMode="none" screenOptions={{cardStyle: {backgroundColor: 'transparent'}}}>
       {stackRoutes.map((v, i) => (
         <Stack.Screen key={i} name={v.name} component={v.component} />
       ))}
