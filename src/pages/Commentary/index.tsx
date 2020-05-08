@@ -20,12 +20,10 @@ import {CommentaryDTO, CommentaryLevelEnum, mockCommList} from "./services";
 import CommentItem from "./CommentItem";
 import {isIphoneX} from "../../utils/publicStyle";
 
-
 const Commentary = ({route, navigation}: { route: any, navigation: StackNavigationProp<any> }) => {
   navigation.setOptions({headerShown: false});
 
   const [list, setList] = React.useState(mockCommList);
-  const [comment, setComment] = React.useState('');
 
   React.useEffect(() => {
     //setList([]);
@@ -78,10 +76,10 @@ const Commentary = ({route, navigation}: { route: any, navigation: StackNavigati
 
         {/*尾部输入框*/}
         <View style={styles.inputWrap}>
-          <TouchableWithoutFeedback onPress={() => navigation.navigate('Modals', {screen: 'CommentInput'})}>
+          <TouchableWithoutFeedback onPress={() => navigation.navigate('Modals', {screen: 'CommentInput', params: {comment: route.params.comment}})}>
             <View style={styles.commentWrap}>
-              <Text style={[styles.comment, !comment && {color: '#A1A2A7'}]}>
-                {comment || '有爱评论，说点儿好听的~'}
+              <Text style={[styles.comment, !route.params.comment && {color: '#A1A2A7'}]}>
+                {route.params.comment || '有爱评论，说点儿好听的~'}
               </Text>
             </View>
           </TouchableWithoutFeedback>
