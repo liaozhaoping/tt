@@ -43,10 +43,19 @@ const Commentary = ({route, navigation}: { route: any, navigation: StackNavigati
   }
 
   //处理点赞或取消点赞
-  function handlePressPraise(item: CommentaryDTO, index: number) {
+  function handlePressPraise(item: CommentaryDTO, index: number, parent?: CommentaryDTO, parentIndex?: number) {
     item.isLike = !item.isLike;
     item.hearts += item.isLike ? 1 : -1;
-    setList(prevState => prevState.splice(index, 1, item));
+    setList(prevState => {
+      if (parent && parent.replyList) {
+        parent.replyList.splice(index, 1, item);
+        prevState.splice(parentIndex || 0, 1, parent);
+      } else {
+        prevState.splice(index, 1, item);
+      }
+
+      return prevState.slice();
+    });
   }
 
   function handlePressComment(name: string, index: number) {
@@ -105,7 +114,7 @@ const Commentary = ({route, navigation}: { route: any, navigation: StackNavigati
         {item.replyList && item.replyList.length && item.replyList.map((v, i) => (
           <CommentItem key={i} item={v}
                        type={CommentaryLevelEnum.SECONDARY}
-                       onPressPraise={() => handlePressPraise(v, i)}
+                       onPressPraise={() => handlePressPraise(v, i, item, index)}
                        onPressComment={() => handlePressComment(v.name, index)}/>
         ))}
       </View>
